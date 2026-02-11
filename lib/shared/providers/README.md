@@ -1,0 +1,1 @@
+# 全局状态（如 ThemeProvider, RecentHistory）
