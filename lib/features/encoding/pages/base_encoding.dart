@@ -3,6 +3,7 @@ import 'package:ctf_tools/shared/widgets/dropdown_menu.dart';
 import 'package:ctf_tools/shared/widgets/mbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:ctf_tools/features/encoding/utils/character_encoding.dart';
+import 'package:flutter/services.dart';
 
 class BaseEncodingScreen extends StatefulWidget {
   const BaseEncodingScreen({super.key});
@@ -95,28 +96,27 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                 Spacer(),
 
                 // 复制按钮
-                MElevatedButton(icon: Icons.copy, text: "复制",onPressed: ()=>{}),
-                const SizedBox(width: 12),
-                // 导入文件按钮
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF122244),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () => {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.file_copy, color: Color(0xFF2B64D1)),
-                      Text("导入文件", style: TextStyle(color: Color(0xFF2B64D1))),
-                    ],
-                  ),
+                MElevatedButton(
+                  icon: Icons.copy,
+                  text: "复制",
+                  onPressed: () => {
+                    _copyText(inputController.text),
+                  },
                 ),
                 const SizedBox(width: 12),
-
+                // 导入文件按钮
+                MElevatedButton(
+                  icon: Icons.file_open,
+                  text: "导入文件",
+                  onPressed: () => {},
+                ),
+                const SizedBox(width: 12),
                 // 清空按钮
-                MElevatedButton(icon: Icons.delete, text: "清空", onPressed: ()=>{}),
+                MElevatedButton(
+                  icon: Icons.delete,
+                  text: "清空",
+                  onPressed: () => {_clear()},
+                ),
               ],
             ),
             SizedBox(height: 20),
@@ -124,6 +124,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
             // 输入框
             TextField(
               maxLines: 10,
+              controller: inputController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -145,11 +146,29 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                MElevatedButton(icon: Icons.lock, text: "编码",onPressed: ()=>{}),
+                MElevatedButton(
+                  icon: Icons.lock,
+                  iconColor: Colors.white,
+                  text: "编码",
+                  textColor: Colors.white,
+                  onPressed: () => {},
+                ),
                 SizedBox(width: 20),
-                MElevatedButton(icon: Icons.lock_open, text: "解码",onPressed: ()=>{}),
+                MElevatedButton(
+                  icon: Icons.lock_open,
+                  iconColor: Colors.white,
+                  text: "解码",
+                  textColor: Colors.white,
+                  onPressed: () => {},
+                ),
                 SizedBox(width: 20),
-                MElevatedButton(icon: Icons.sync_outlined, text: "交换",onPressed: ()=>{}),
+                MElevatedButton(
+                  icon: Icons.sync_outlined,
+                  iconColor: Colors.white,
+                  text: "交换",
+                  textColor: Colors.white,
+                  onPressed: () => {},
+                ),
               ],
             ),
             SizedBox(height: 20),
@@ -176,28 +195,27 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                 Spacer(),
 
                 // 复制按钮
-                MElevatedButton(icon: Icons.copy, text: "复制",onPressed: ()=>{}),
-                const SizedBox(width: 12),
-                // 导入文件按钮
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF122244),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () => {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.file_copy, color: Color(0xFF2B64D1)),
-                      Text("导出到文件", style: TextStyle(color: Color(0xFF2B64D1))),
-                    ],
-                  ),
+                MElevatedButton(
+                  icon: Icons.copy,
+                  text: "复制",
+                  onPressed: () => {
+                    _copyText(outputController.text),
+                  },
                 ),
                 const SizedBox(width: 12),
-
+                // 导出文件按钮
+                MElevatedButton(
+                  icon: Icons.file_copy,
+                  text: "导出到文件",
+                  onPressed: () => {},
+                ),
+                const SizedBox(width: 12),
                 // 清空按钮
-                MElevatedButton(icon: Icons.delete, text: "清空", onPressed: ()=>{}),
+                MElevatedButton(
+                  icon: Icons.delete,
+                  text: "清空",
+                  onPressed: () => {_clear()},
+                ),
               ],
             ),
             SizedBox(height: 20),
@@ -206,6 +224,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
             Expanded(
               child: TextField(
                 maxLines: 15,
+                controller: outputController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -224,6 +243,40 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  ///=== 私有方法 ===///
+
+  /// 清理输入输出框
+  void _clear() {
+    if(inputController.text.isEmpty && outputController.text.isEmpty){
+      _showToast("无内容可清空喵");
+      return;
+    }
+    inputController.clear();
+    outputController.clear();
+    _showToast("已清空喵");
+  }
+
+  /// 复制文本
+  Future<void> _copyText(String text) async {
+    if (text.isEmpty) {
+      _showToast("无内容可复制喵");
+      return;
+    }
+    await Clipboard.setData(ClipboardData(text: text));
+    _showToast("复制成功喵");
+  }
+
+  /// 显示提示弹窗（Toast）
+  void _showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFF2B5EC9),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

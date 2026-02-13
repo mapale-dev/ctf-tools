@@ -9,11 +9,11 @@ class MElevatedButton extends StatefulWidget {
 
   const MElevatedButton({
     super.key,
-    required this.onPressed,
     required this.icon,
     this.iconColor = const Color(0xFF2B64D1),
     required this.text,
     this.textColor = const Color(0xFF2B64D1),
+    required this.onPressed,
   });
 
   @override
