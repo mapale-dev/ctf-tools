@@ -23,6 +23,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: "MapleFont"
       ),
+      darkTheme: ThemeData(
+        fontFamily: "MapleFont"
+      ),
     );
   }
 }

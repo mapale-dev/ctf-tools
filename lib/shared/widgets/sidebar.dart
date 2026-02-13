@@ -2,6 +2,7 @@ import 'package:ctf_tools/core/route/app_routes.dart';
 import 'package:ctf_tools/core/route/nav_item.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class Sidebar extends StatefulWidget {
   const Sidebar({super.key});
@@ -12,6 +13,31 @@ class Sidebar extends StatefulWidget {
 
 class _SidebarState extends State<Sidebar> {
   String? expandedMenu;
+  String? _version;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final versionString = '${packageInfo.version}+${packageInfo.buildNumber}';
+      if (mounted) {
+        setState(() {
+          _version = versionString;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _version = 'Unknown';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +62,7 @@ class _SidebarState extends State<Sidebar> {
             // 一级菜单
             ...navItems
                 .where((item) => _isTopLevel(item.route))
-                .map((item) => _buildTopLevel(context, item, location))
-                .toList(),
+                .map((item) => _buildTopLevel(context, item, location)),
             const SizedBox(height: 12),
             // 底栏
             _buildFooter(),
@@ -71,7 +96,7 @@ class _SidebarState extends State<Sidebar> {
   }
 
   // 底栏
-  Widget _buildFooter() {
+  Widget _buildFooter()  {
     return SizedBox(
       width: double.infinity,
       child: Card(
@@ -80,9 +105,8 @@ class _SidebarState extends State<Sidebar> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
-            children: const [
-              Text("Version 1.0.0", style: TextStyle(color: Color(0xFF505364))),
-              Text("Hash aasdgdfhfgb", style: TextStyle(color: Color(0xFF505364))),
+            children: [
+              Text("Version ${_version ?? '...'}", style: const TextStyle(color: Color(0xFF505364))),
             ],
           ),
         ),
@@ -95,7 +119,7 @@ class _SidebarState extends State<Sidebar> {
     return route.split("/").length == 2;
   }
 
-// 一级菜单 + 展开逻辑
+  // 一级菜单 + 展开逻辑
   Widget _buildTopLevel(BuildContext context, NavItem item, String location) {
     final bool isExpanded = expandedMenu == item.route;
     final bool isActive = item.route == "/"
@@ -129,17 +153,19 @@ class _SidebarState extends State<Sidebar> {
         if (isExpanded)
           ...navItems
               .where((sub) => sub.route.startsWith("${item.route}/"))
-              .map((sub) => _subMenuCard(
-            icon: sub.icon,
-            title: sub.name,
-            selected: location == sub.route,
-            onTap: () => context.go(sub.route),
-          )),
+              .map(
+                (sub) => _subMenuCard(
+                  icon: sub.icon,
+                  title: sub.name,
+                  selected: location == sub.route,
+                  onTap: () => context.go(sub.route),
+                ),
+              ),
       ],
     );
   }
 
-// 一级卡片
+  // 一级卡片
   Widget _menuCard({
     required IconData icon,
     required String title,
@@ -161,7 +187,12 @@ class _SidebarState extends State<Sidebar> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: selected ? const Color(0xFF2B64CC) : const Color(0xFF646C7A)),
+            Icon(
+              icon,
+              color: selected
+                  ? const Color(0xFF2B64CC)
+                  : const Color(0xFF646C7A),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -169,7 +200,9 @@ class _SidebarState extends State<Sidebar> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: selected ? const Color(0xFF285ABA) : const Color(0xFF646C7A),
+                  color: selected
+                      ? const Color(0xFF285ABA)
+                      : const Color(0xFF646C7A),
                 ),
               ),
             ),
@@ -180,7 +213,9 @@ class _SidebarState extends State<Sidebar> {
                 child: Icon(
                   Icons.keyboard_arrow_down,
                   size: 18,
-                  color: selected ? const Color(0xFF285ABA) : const Color(0xFF646C7A),
+                  color: selected
+                      ? const Color(0xFF285ABA)
+                      : const Color(0xFF646C7A),
                 ),
               ),
           ],
@@ -208,13 +243,21 @@ class _SidebarState extends State<Sidebar> {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: selected ? const Color(0xFF2453AC) : const Color(0xFF7D8597)),
+            Icon(
+              icon,
+              size: 18,
+              color: selected
+                  ? const Color(0xFF2453AC)
+                  : const Color(0xFF7D8597),
+            ),
             const SizedBox(width: 10),
             Text(
               title,
               style: TextStyle(
                 fontSize: 14,
-                color: selected ? const Color(0xFF2453AC) : const Color(0xFF9AA4B2),
+                color: selected
+                    ? const Color(0xFF2453AC)
+                    : const Color(0xFF9AA4B2),
               ),
             ),
           ],
