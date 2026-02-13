@@ -1,4 +1,5 @@
 import 'package:ctf_tools/core/route/nav_item.dart';
+import 'package:ctf_tools/features/encoding/pages/base_encoding.dart';
 import 'package:ctf_tools/main_layout.dart';
 import 'package:ctf_tools/pages/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ final List<NavItem> navItems = [
   // 编码/解码
   NavItem(name: "编码解码", route: "/encoding", icon: Icons.data_array, builder: (context,state) => HomeScreen(), isContainerOnly: true),
   // 1. Base 系列编码 Base64, Base32, Base58, Base85)
-  NavItem(name: "Base系列", route: "/encoding/base", icon: Icons.numbers, builder: (context,state) => HomeScreen()),
+  NavItem(name: "Base系列", route: "/encoding/base", icon: Icons.numbers, builder: (context,state) => BaseEncodingScreen()),
   // 2. 文本内容编码 URL 编码, HTML 实体编码, Quoted-Printable, Morse Code
   NavItem(name: "文本编码", route: "/encoding/text", icon: Icons.text_format, builder: (context,state) => HomeScreen()),
   // 3. 字符集与文本表示转换	Unicode 转义, Hex ↔ ASCII, UTF-8 转换, Binary ↔ ASCII)
@@ -24,7 +25,7 @@ final List<NavItem> navItems = [
   // 6. 简单替换密码	ROT13, ROT47, 自定义 ROT
   NavItem(name: "替换密码", route: "/encoding/replace", icon: Icons.swap_horiz, builder: (context,state) => HomeScreen()),
 
-  // 密码学工
+  // 密码学工具
   NavItem(name: "密码学", route: "/crypto", icon: Icons.lock, builder: (context,state) => HomeScreen(), isContainerOnly: true),
   // 1. 经典密码	Caesar, Vigenère, Atbash, Affine, Rail Fence, Baconia
   NavItem(name: "经典密码", route: "/crypto/classical", icon: Icons.history_edu, builder: (context,state) => HomeScreen()),
