@@ -1,9 +1,11 @@
-List<String> get getBaseEncodingList => {
+List<String> get getBaseEncodingList => [
+  "Base2",
+  "Base8",
   "Base16",
   "Base32",
+  "Base36",
   "Base58",
   "Base62",
   "Base64",
-  "Base85",
-  "Base91"
-}.toList();
+  "Base66"
+];

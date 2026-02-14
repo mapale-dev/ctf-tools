@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ctf_tools/features/encoding/utils/base_encoding/base_encoding.dart';
 import 'package:ctf_tools/features/encoding/utils/base_encoding/base_list.dart';
 import 'package:ctf_tools/shared/widgets/dropdown_menu.dart';
 import 'package:ctf_tools/shared/widgets/mbutton.dart';
@@ -17,10 +20,12 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
   String selectedCharacterEncoding =
       CharacterEncoding().characterEncodingList[0];
   // 当前选中的Base编码
-  String baseInitialValue = getBaseEncodingList[4];
+  String baseInitialValue = getBaseEncodingList[7];
 
   // 输入框文本控制器
   TextEditingController inputController = TextEditingController();
+  // 交换文本
+  String swapTextTemp = "";
   // 输出框文本控制器
   TextEditingController outputController = TextEditingController();
 
@@ -55,6 +60,11 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                 MDropdownMenu(
                   initialValue: selectedCharacterEncoding,
                   items: CharacterEncoding().characterEncodingList,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCharacterEncoding = value;
+                    });
+                  },
                 ),
 
                 const SizedBox(width: 16),
@@ -68,6 +78,11 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                 MDropdownMenu(
                   initialValue: baseInitialValue,
                   items: getBaseEncodingList,
+                  onChanged: (value) {
+                    setState(() {
+                      baseInitialValue = value;
+                    });
+                  },
                 ),
               ],
             ),
@@ -99,9 +114,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                 MElevatedButton(
                   icon: Icons.copy,
                   text: "复制",
-                  onPressed: () => {
-                    _copyText(inputController.text),
-                  },
+                  onPressed: () => {_copyText(inputController.text)},
                 ),
                 const SizedBox(width: 12),
                 // 导入文件按钮
@@ -151,7 +164,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                   iconColor: Colors.white,
                   text: "编码",
                   textColor: Colors.white,
-                  onPressed: () => {},
+                  onPressed: () => {_baseEncoding()},
                 ),
                 SizedBox(width: 20),
                 MElevatedButton(
@@ -159,7 +172,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                   iconColor: Colors.white,
                   text: "解码",
                   textColor: Colors.white,
-                  onPressed: () => {},
+                  onPressed: () => {_baseDecoding()},
                 ),
                 SizedBox(width: 20),
                 MElevatedButton(
@@ -167,7 +180,11 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                   iconColor: Colors.white,
                   text: "交换",
                   textColor: Colors.white,
-                  onPressed: () => {},
+                  onPressed: () => {
+                    swapTextTemp = inputController.text,
+                    inputController.text = outputController.text,
+                    outputController.text = swapTextTemp,
+                  },
                 ),
               ],
             ),
@@ -198,9 +215,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
                 MElevatedButton(
                   icon: Icons.copy,
                   text: "复制",
-                  onPressed: () => {
-                    _copyText(outputController.text),
-                  },
+                  onPressed: () => {_copyText(outputController.text)},
                 ),
                 const SizedBox(width: 12),
                 // 导出文件按钮
@@ -248,10 +263,41 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
   }
 
   ///=== 私有方法 ===///
+  /// Base编码
+  void _baseEncoding() {
+    setState(() {
+      // 先转 UTF-8 bytes
+      final utf8Bytes = utf8.encode(inputController.text);
+
+      // 再 Base 编码
+      outputController.text = BaseCodecFactory.encode(
+        baseInitialValue,
+        utf8Bytes,
+      );
+    });
+  }
+
+  /// Base解码
+  void _baseDecoding() {
+    setState(() {
+      // Base 解码成字节
+      final decodedBytes = BaseCodecFactory.decode(
+        baseInitialValue,
+        inputController.text,
+      );
+      // 转成 UTF-8
+      final utf8Bytes = CharacterEncoding.convertToUtf8(
+        decodedBytes,
+        selectedCharacterEncoding,
+      );
+      // 转成字符串显示
+      outputController.text = utf8.decode(utf8Bytes);
+    });
+  }
 
   /// 清理输入输出框
   void _clear() {
-    if(inputController.text.isEmpty && outputController.text.isEmpty){
+    if (inputController.text.isEmpty && outputController.text.isEmpty) {
       _showToast("无内容可清空喵");
       return;
     }
