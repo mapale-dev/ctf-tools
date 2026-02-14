@@ -1,5 +1,6 @@
 import 'package:ctf_tools/core/route/nav_item.dart';
-import 'package:ctf_tools/features/encoding/pages/base_encoding.dart';
+import 'package:ctf_tools/features/encoding/pages/base_codec.dart';
+import 'package:ctf_tools/features/encoding/pages/text_codec.dart';
 import 'package:ctf_tools/main_layout.dart';
 import 'package:ctf_tools/pages/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,17 +13,19 @@ final List<NavItem> navItems = [
 
   // 编码/解码
   NavItem(name: "编码解码", route: "/encoding", icon: Icons.data_array, builder: (context,state) => HomeScreen(), isContainerOnly: true),
-  // 1. Base 系列编码 Base64, Base32, Base58, Base85)
-  NavItem(name: "Base系列", route: "/encoding/base", icon: Icons.numbers, builder: (context,state) => BaseEncodingScreen()),
+  // 1. Base 系列编码 Base64, Base32, Base58, Base85
+  NavItem(name: "Base系列", route: "/encoding/base", icon: Icons.numbers, builder: (context,state) => BaseCodecScreen()),
   // 2. 文本内容编码 URL 编码, HTML 实体编码, Quoted-Printable, Morse Code
-  NavItem(name: "文本编码", route: "/encoding/text", icon: Icons.text_format, builder: (context,state) => HomeScreen()),
-  // 3. 字符集与文本表示转换	Unicode 转义, Hex ↔ ASCII, UTF-8 转换, Binary ↔ ASCII)
+  NavItem(name: "文本编码", route: "/encoding/text", icon: Icons.text_format, builder: (context,state) => TextEncodingScreen()),
+  // 3. ProtoBuf 编码解码
+  NavItem(name: "ProtoBuf", route: "/encoding/protobuf", icon: Icons.library_books, builder:  (context,state) => BaseCodecScreen()),
+  // 4. 字符集与文本表示转换	Unicode 转义, Hex ↔ ASCII, UTF-8 转换, Binary ↔ ASCII)
   NavItem(name: "字符集", route: "/encoding/char", icon: Icons.abc, builder: (context,state) => HomeScreen()),
-  // 4. 压缩与解压缩	Zlib, Gzip)
+  // 5. 压缩与解压缩	Zlib, Gzip)
   NavItem(name: "压缩/解压", route: "/encoding/compress", icon: Icons.compress, builder: (context,state) => HomeScreen()),
-  // 5. 数值与进制转换	BCD 转换, Binary ↔ Hex, 进制互转
+  // 6. 数值与进制转换	BCD 转换, Binary ↔ Hex, 进制互转
   NavItem(name: "数值/进制", route: "/encoding/number", icon: Icons.calculate, builder: (context,state) => HomeScreen()),
-  // 6. 简单替换密码	ROT13, ROT47, 自定义 ROT
+  // 7. 简单替换密码	ROT13, ROT47, 自定义 ROT
   NavItem(name: "替换密码", route: "/encoding/replace", icon: Icons.swap_horiz, builder: (context,state) => HomeScreen()),
 
   // 密码学工具

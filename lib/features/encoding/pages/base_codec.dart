@@ -1,21 +1,20 @@
 import 'dart:convert';
-
-import 'package:ctf_tools/features/encoding/utils/base_encoding/base_encoding.dart';
 import 'package:ctf_tools/features/encoding/utils/base_encoding/base_list.dart';
 import 'package:ctf_tools/shared/widgets/dropdown_menu.dart';
 import 'package:ctf_tools/shared/widgets/mbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:ctf_tools/features/encoding/utils/character_encoding.dart';
 import 'package:flutter/services.dart';
+import 'package:ctf_tools/features/encoding/utils/base_encoding/base_codec.dart';
 
-class BaseEncodingScreen extends StatefulWidget {
-  const BaseEncodingScreen({super.key});
+class BaseCodecScreen extends StatefulWidget {
+  const BaseCodecScreen({super.key});
 
   @override
-  State<BaseEncodingScreen> createState() => _BaseEncodingScreen();
+  State<BaseCodecScreen> createState() => _BaseCodecScreen();
 }
 
-class _BaseEncodingScreen extends State<BaseEncodingScreen> {
+class _BaseCodecScreen extends State<BaseCodecScreen> {
   // 当前选中的字符编码
   String selectedCharacterEncoding =
       CharacterEncoding().characterEncodingList[0];
@@ -136,7 +135,7 @@ class _BaseEncodingScreen extends State<BaseEncodingScreen> {
 
             // 输入框
             TextField(
-              maxLines: 10,
+              maxLines: 8,
               controller: inputController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
