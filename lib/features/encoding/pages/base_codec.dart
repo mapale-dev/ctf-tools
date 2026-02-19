@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:ctf_tools/features/encoding/utils/base_encoding/base_list.dart';
 import 'package:ctf_tools/shared/widgets/dropdown_menu.dart';
 import 'package:ctf_tools/shared/widgets/mbutton.dart';
+import 'package:ctf_tools/shared/widgets/show_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:ctf_tools/features/encoding/utils/character_encoding.dart';
 import 'package:flutter/services.dart';
@@ -297,32 +298,22 @@ class _BaseCodecScreen extends State<BaseCodecScreen> {
   /// 清理输入输出框
   void _clear() {
     if (inputController.text.isEmpty && outputController.text.isEmpty) {
-      _showToast("无内容可清空喵");
+      showToast("无内容可清空喵",context);
       return;
     }
     inputController.clear();
     outputController.clear();
-    _showToast("已清空喵");
+    showToast("已清空喵",context);
   }
 
   /// 复制文本
   Future<void> _copyText(String text) async {
     if (text.isEmpty) {
-      _showToast("无内容可复制喵");
+      showToast("无内容可复制喵",context);
       return;
     }
     await Clipboard.setData(ClipboardData(text: text));
-    _showToast("复制成功喵");
-  }
-
-  /// 显示提示弹窗（Toast）
-  void _showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: const Color(0xFF2B5EC9),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    if(!mounted) return;
+    showToast("复制成功喵",context);
   }
 }

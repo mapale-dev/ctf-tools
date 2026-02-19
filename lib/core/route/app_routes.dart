@@ -1,6 +1,7 @@
 import 'package:ctf_tools/core/route/nav_item.dart';
 import 'package:ctf_tools/features/encoding/pages/base_codec.dart';
 import 'package:ctf_tools/features/encoding/pages/text_codec.dart';
+import 'package:ctf_tools/features/network/pages/recon.dart';
 import 'package:ctf_tools/main_layout.dart';
 import 'package:ctf_tools/pages/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +20,11 @@ final List<NavItem> navItems = [
   NavItem(name: "文本编码", route: "/encoding/text", icon: Icons.text_format, builder: (context,state) => TextEncodingScreen()),
   // 3. ProtoBuf 编码解码
   NavItem(name: "ProtoBuf", route: "/encoding/protobuf", icon: Icons.library_books, builder:  (context,state) => BaseCodecScreen()),
-  // 4. 字符集与文本表示转换	Unicode 转义, Hex ↔ ASCII, UTF-8 转换, Binary ↔ ASCII)
-  NavItem(name: "字符集", route: "/encoding/char", icon: Icons.abc, builder: (context,state) => HomeScreen()),
-  // 5. 压缩与解压缩	Zlib, Gzip)
+  // 4. 压缩与解压缩	Zlib, Gzip)
   NavItem(name: "压缩/解压", route: "/encoding/compress", icon: Icons.compress, builder: (context,state) => HomeScreen()),
-  // 6. 数值与进制转换	BCD 转换, Binary ↔ Hex, 进制互转
+  // 5. 数值与进制转换	BCD 转换, Binary ↔ Hex, 进制互转
   NavItem(name: "数值/进制", route: "/encoding/number", icon: Icons.calculate, builder: (context,state) => HomeScreen()),
-  // 7. 简单替换密码	ROT13, ROT47, 自定义 ROT
+  // 6. 简单替换密码	ROT13, ROT47, 自定义 ROT
   NavItem(name: "替换密码", route: "/encoding/replace", icon: Icons.swap_horiz, builder: (context,state) => HomeScreen()),
 
   // 密码学工具
@@ -48,12 +47,12 @@ final List<NavItem> navItems = [
   // 3. 文本隐写	空格/Tab 隐写（Snow）、零宽字符检测与提取
   NavItem(name: "文本", route: "/stego/text", icon: Icons.format_size, builder: (context,state) => HomeScreen()),
 
-  // 网络协
+  // 网络协议
   NavItem(name: "网络协议", route: "/network", icon: Icons.router, builder: (context,state) => HomeScreen(), isContainerOnly: true),
-  // 1. 网络协议交互与模拟	SMTP/FTP/POP3 模拟、HTTP 请求构造器、WebSocket 重
+  // 1. 网络协议交互与模拟	SMTP/FTP/POP3 模拟、HTTP 请求构造器、WebSocket
   NavItem(name: "协议交互", route: "/network/interaction", icon: Icons.sync_alt, builder: (context,state) => HomeScreen()),
-  // 2. 网络探测与信息收集	WHOIS、子域名枚举、DNS 查询（含 TXT
-  NavItem(name: "信息收集", route: "/network/recon", icon: Icons.explore, builder: (context,state) => HomeScreen()),
+  // 2. 网络探测与信息收集	WHOIS、子域名枚举、DNS 查询
+  NavItem(name: "信息收集", route: "/network/recon", icon: Icons.explore, builder: (context,state) => ReconScreen()),
   // 3. 流量分析与重组	TCP/UDP 流重组（pcap 解析）
   NavItem(name: "流量分析", route: "/network/traffic", icon: Icons.timeline, builder: (context,state) => HomeScreen()),
   // 4. 网络地址与扫描工具	IPv4/IPv6 格式转换、端口扫描
