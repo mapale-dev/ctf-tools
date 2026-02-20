@@ -153,9 +153,6 @@ class WhoisUtil {
         buffer.writeln('WHOIS 数据库最后更新：${whois.lastUpdateOfWhoisDatabase}');
       }
 
-      buffer.writeln('\nℹ️ 提示：域名状态 "clientTransferProhibited" 表示禁止转移，可有效防止域名被恶意转出。');
-      buffer.writeln('更多 EPP 状态码说明请访问：https://icann.org/epp');
-
       return buffer.toString();
     } catch (e) {
       return '❌ WHOIS 查询失败：$e';

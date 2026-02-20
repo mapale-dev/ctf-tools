@@ -38,7 +38,7 @@ final List<NavItem> navItems = [
   // 4. 密码分析与辅助工具	XOR 爆破、字频分析、多表替换分析、JWT 操作、PEM/DER 转换
   NavItem(name: "密码分析", route: "/crypto/analysis", icon: Icons.analytics, builder: (context,state) => HomeScreen()),
 
-  // 隐写工
+  // 隐写工具
   NavItem(name: "隐写工具", route: "/stego", icon: Icons.hide_image, builder: (context,state) => HomeScreen(), isContainerOnly: true),
   // 1. 图像隐写	LSB 提取、zsteg、EXIF 查看、binwalk 扫
   NavItem(name: "图像", route: "/stego/image", icon: Icons.image_search, builder: (context,state) => HomeScreen()),
@@ -51,7 +51,7 @@ final List<NavItem> navItems = [
   NavItem(name: "网络协议", route: "/network", icon: Icons.router, builder: (context,state) => HomeScreen(), isContainerOnly: true),
   // 1. 网络协议交互与模拟	SMTP/FTP/POP3 模拟、HTTP 请求构造器、WebSocket
   NavItem(name: "协议交互", route: "/network/interaction", icon: Icons.sync_alt, builder: (context,state) => HomeScreen()),
-  // 2. 网络探测与信息收集	WHOIS、子域名枚举、DNS 查询
+  // 2. 网络探测与信息收集	WHOIS、DNS 查询
   NavItem(name: "信息收集", route: "/network/recon", icon: Icons.explore, builder: (context,state) => ReconScreen()),
   // 3. 流量分析与重组	TCP/UDP 流重组（pcap 解析）
   NavItem(name: "流量分析", route: "/network/traffic", icon: Icons.timeline, builder: (context,state) => HomeScreen()),

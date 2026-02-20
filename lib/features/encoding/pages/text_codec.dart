@@ -217,7 +217,10 @@ class _TextEncodingScreen extends State<TextEncodingScreen> {
             //输出框
             Expanded(
               child: TextField(
-                maxLines: 15,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                textAlign: TextAlign.start,
                 controller: outputController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
