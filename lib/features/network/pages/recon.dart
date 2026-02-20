@@ -1,3 +1,4 @@
+import 'package:ctf_tools/features/network/widgets/dns_query_screen.dart';
 import 'package:ctf_tools/features/network/widgets/whois_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -58,7 +59,7 @@ class ReconScreen extends StatelessWidget {
               child: TabBarView(
                 children: [
                   WhoisScreen(),
-                  WhoisScreen(), // 替换为 DNS 查询页面
+                  DnsQueryScreen(),
                 ],
               ),
             ),

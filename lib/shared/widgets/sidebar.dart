@@ -58,7 +58,7 @@ class _SidebarState extends State<Sidebar> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _topLogo(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             // 一级菜单
             ...navItems
                 .where((item) => _isTopLevel(item.route))

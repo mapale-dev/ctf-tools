@@ -104,7 +104,7 @@ class WhoisUtil {
       final buffer = StringBuffer();
 
       buffer.writeln('🔍 域名信息查询结果');
-      buffer.writeln('=' * 20);
+      buffer.writeln('=' * 50);
       buffer.writeln('域名：${whois.domainName}');
 
       if (whois.creationDate != null) {

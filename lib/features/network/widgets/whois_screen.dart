@@ -1,21 +1,26 @@
+import 'dart:convert';
 import 'package:ctf_tools/features/network/utils/whois_util.dart';
 import 'package:ctf_tools/shared/widgets/mbutton.dart';
 import 'package:ctf_tools/shared/widgets/show_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:whois/whois.dart';
 
-class WhoisScreen extends StatefulWidget{
+class WhoisScreen extends StatefulWidget {
   const WhoisScreen({super.key});
-  
+
   @override
   State<WhoisScreen> createState() => _WhoisScreen();
 }
 
-class _WhoisScreen extends State<WhoisScreen>{
+class _WhoisScreen extends State<WhoisScreen> {
   // 输入框文本控制器
   TextEditingController inputController = TextEditingController();
   // 输出框文本控制器
   TextEditingController outputController = TextEditingController();
+  // 是否 RAW 模式
+  bool isRawMode = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,23 +29,6 @@ class _WhoisScreen extends State<WhoisScreen>{
         padding: EdgeInsetsGeometry.all(20),
         child: Column(
           children: [
-            // 顶栏
-            Row(
-              children: [
-                // 标题
-                Text(
-                  "网络信息收集",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFE1D4),
-                  ),
-                ),
-                const SizedBox(width: 26),
-              ],
-            ),
-            SizedBox(height: 20),
-
             // 输入框标题
             Row(
               children: [
@@ -49,6 +37,17 @@ class _WhoisScreen extends State<WhoisScreen>{
                   style: TextStyle(color: Color(0xFF9497A0), fontSize: 16),
                 ),
                 const SizedBox(width: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFF122244),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    "INPUT",
+                    style: TextStyle(color: Color(0xFF2B64D1)),
+                  ),
+                ),
                 Spacer(),
               ],
             ),
@@ -64,12 +63,12 @@ class _WhoisScreen extends State<WhoisScreen>{
                       prefixIcon: Icon(Icons.search),
                       suffixIcon: inputController.text.isNotEmpty
                           ? IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          inputController.clear();
-                          setState(() {});
-                        },
-                      )
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                                inputController.clear();
+                                setState(() {});
+                              },
+                            )
                           : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -80,7 +79,7 @@ class _WhoisScreen extends State<WhoisScreen>{
                 SizedBox(width: 20),
                 MElevatedButton(
                   icon: Icons.search,
-                  text: "搜索",
+                  text: "查询",
                   onPressed: () {
                     _whoisSearch();
                     setState(() {});
@@ -104,9 +103,22 @@ class _WhoisScreen extends State<WhoisScreen>{
                   ),
                   padding: EdgeInsets.all(5),
                   child: Text(
-                    "READY",
+                    "RAW OUTPUT",
                     style: TextStyle(color: Color(0xFF0F9F6D)),
                   ),
+                ),
+                const SizedBox(width: 12),
+                Switch(
+                  value: isRawMode,
+                  activeThumbColor: Colors.blueAccent, // 开关开启时的滑块颜色
+                  activeTrackColor: Colors.blueAccent[1], // 开关开启时的轨道颜色
+                  inactiveThumbColor: Colors.grey, // 开关关闭时的滑块颜色
+                  inactiveTrackColor: Colors.black, // 开关关闭时的轨道颜色
+                  onChanged: (value) {
+                    setState(() {
+                      isRawMode = value;
+                    });
+                  },
                 ),
                 Spacer(),
 
@@ -137,7 +149,10 @@ class _WhoisScreen extends State<WhoisScreen>{
             //输出框
             Expanded(
               child: TextField(
-                maxLines: 19,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                textAlign: TextAlign.start,
                 controller: outputController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -161,16 +176,29 @@ class _WhoisScreen extends State<WhoisScreen>{
     );
   }
 
-
   ///=== 私有方法 ===///
   /// Whois查询
   Future<void> _whoisSearch() async {
     if (inputController.text.isEmpty) {
       showToast("不知道你要查询什么喵", context);
+      return;
     }
-    outputController.text = await WhoisUtil.lookupAndFormatChinese(
-      inputController.text,
-    );
+    try {
+      String result;
+      if (isRawMode) {
+        final tmp = await Whois.lookup(inputController.text);
+        final originalUtf8Bytes = latin1.encode(tmp);
+        result = utf8.decode(originalUtf8Bytes, allowMalformed: true);
+      } else {
+        result = await WhoisUtil.lookupAndFormatChinese(inputController.text);
+      }
+      outputController.text = result;
+    } catch (e) {
+      final errorMessage = "查询出错：$e";
+      outputController.text = errorMessage;
+      if (!mounted) return;
+      showToast("查询失败：$e", context);
+    }
   }
 
   /// 清理输入输出框
