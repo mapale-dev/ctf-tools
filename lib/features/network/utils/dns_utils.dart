@@ -12,6 +12,27 @@ class DnsResult {
   final bool exists; // 是否存在
   final String? error; // 错误信息
 
+  @override
+  String toString() {
+    if (error != null) {
+      return 'DnsResult(error: $error)';
+    }
+    if (!exists) {
+      return 'DnsResult(domain does not exist)';
+    }
+
+    final buffer = StringBuffer('DnsResult(\n');
+    if (aRecords.isNotEmpty) buffer.write('  A: $aRecords\n');
+    if (aaaaRecords.isNotEmpty) buffer.write('  AAAA: $aaaaRecords\n');
+    if (cnameRecords.isNotEmpty) buffer.write('  CNAME: $cnameRecords\n');
+    if (mxRecords.isNotEmpty) buffer.write('  MX: $mxRecords\n');
+    if (txtRecords.isNotEmpty) buffer.write('  TXT: $txtRecords\n');
+    if (nsRecords.isNotEmpty) buffer.write('  NS: $nsRecords\n');
+    if (soaRecord != null) buffer.write('  SOA: $soaRecord\n');
+    buffer.write(')');
+    return buffer.toString();
+  }
+
   DnsResult({
     this.aRecords = const [],
     this.aaaaRecords = const [],
@@ -27,35 +48,29 @@ class DnsResult {
 
 /// DNS 工具类
 class DnsUtils {
-
-  Map<String, DnsOverHttps> get dnsServers => {
-    'Google DNS': DnsOverHttps.google(timeout: Duration(seconds: 10)),
+  // 预定义 DNS 服务器列表
+  static Map<String, DnsOverHttps> get dnsServers => {
     'Cloudflare': DnsOverHttps.cloudflare(timeout: Duration(seconds: 10)),
+    'Google DNS': DnsOverHttps.google(timeout: Duration(seconds: 10)),
     'AdGuard': DnsOverHttps.adguard(timeout: Duration(seconds: 10)),
     'AdGuardFamily': DnsOverHttps.adguardFamily(timeout: Duration(seconds: 10)),
-    'AdGuardNonFiltering': DnsOverHttps.adguardNonFiltering(timeout: Duration(seconds: 10)),
+    'AdGuardNonFiltering': DnsOverHttps.adguardNonFiltering(timeout: Duration(seconds: 10),),
     'DnsSb': DnsOverHttps.dnsSb(timeout: Duration(seconds: 10)),
     'NextDns': DnsOverHttps.nextdns(timeout: Duration(seconds: 10)),
-    'NextDnsAnycast': DnsOverHttps.nextdnsAnycast(timeout: Duration(seconds: 10)),
-    '阿里DNS': DnsOverHttps("https://dns.alidns.com/dns-query",timeout: Duration(seconds: 10)),
-    '腾讯DNSPod': DnsOverHttps("https://doh.pub/dns-query",timeout: Duration(seconds: 10)),
-    '华为Cloud': DnsOverHttps("https://dns.huaweicloud.com/dns-query",timeout: Duration(seconds: 10)),
-    '360 DoH': DnsOverHttps("https://doh.360.cn/dns-query",timeout: Duration(seconds: 10)),
-    '114 DoH': DnsOverHttps("https://doh.114dns.com/dns-query",timeout: Duration(seconds: 10)),
+    'NextDnsAnycast': DnsOverHttps.nextdnsAnycast(timeout: Duration(seconds: 10),),
+    '阿里DNS': DnsOverHttps("https://dns.alidns.com/dns-query", timeout: Duration(seconds: 10),),
+    '腾讯DNSPod': DnsOverHttps("https://doh.pub/dns-query", timeout: Duration(seconds: 10),),
+    '华为Cloud': DnsOverHttps("https://dns.huaweicloud.com/dns-query", timeout: Duration(seconds: 10),),
+    '360 DoH': DnsOverHttps("https://doh.360.cn/dns-query", timeout: Duration(seconds: 10),),
+    '114 DoH': DnsOverHttps("https://doh.114dns.com/dns-query", timeout: Duration(seconds: 10),),
   };
 
-  // 使用 Cloudflare DoH
-  static final DnsOverHttps _dns = DnsOverHttps.cloudflare(
-    timeout: Duration(seconds: 10),
-  );
-
-  /// 查询域名所有常见 DNS 记录
-  static Future<DnsResult> queryAll(String domain) async {
-    // 标准化域名
+  /// 使用指定的 DnsOverHttps 查询所有记录
+  static Future<DnsResult> queryAllWith(DnsOverHttps dns, String domain) async {
     final cleanDomain = _sanitizeDomain(domain);
     try {
       // 先查 A 记录判断是否存在
-      final aResponse = await _dns.lookupHttpsByRRType(cleanDomain, RRType.A);
+      final aResponse = await dns.lookupHttpsByRRType(cleanDomain, RRType.A);
 
       if (aResponse.isNxDomain) {
         return DnsResult(exists: false);
@@ -64,19 +79,18 @@ class DnsUtils {
         return DnsResult(error: 'DNS server failure (SERVFAIL)');
       }
 
-      // 并发查询 List<String> 类型的记录
+      // 并发查询各类记录
       final recordFutures = [
-        _safeLookup(RRType.A, cleanDomain),
-        _safeLookup(RRType.AAAA, cleanDomain),
-        _safeLookup(RRType.CNAME, cleanDomain),
-        _safeLookup(RRType.MX, cleanDomain),
-        _safeLookup(RRType.TXT, cleanDomain),
-        _safeLookup(RRType.NS, cleanDomain),
+        _safeLookup(dns, RRType.A, cleanDomain),
+        _safeLookup(dns, RRType.AAAA, cleanDomain),
+        _safeLookup(dns, RRType.CNAME, cleanDomain),
+        _safeLookup(dns, RRType.MX, cleanDomain),
+        _safeLookup(dns, RRType.TXT, cleanDomain),
+        _safeLookup(dns, RRType.NS, cleanDomain),
       ];
       final records = await Future.wait(recordFutures);
 
-      // 单独查 SOA
-      final soa = await _safeLookupSoa(cleanDomain);
+      final soa = await _safeLookupSoa(dns, cleanDomain);
 
       return DnsResult(
         aRecords: records[0],
@@ -97,19 +111,23 @@ class DnsUtils {
     }
   }
 
-  /// 查询
-  static Future<List<String>> _safeLookup(RRType type, String domain) async {
+  /// 安全查询通用记录
+  static Future<List<String>> _safeLookup(
+    DnsOverHttps dns,
+    RRType type,
+    String domain,
+  ) async {
     try {
-      return await _dns.lookupDataByRRType(domain, type);
+      return await dns.lookupDataByRRType(domain, type);
     } catch (e) {
       return [];
     }
   }
 
-  /// 查询 SOA
-  static Future<String?> _safeLookupSoa(String domain) async {
+  /// 安全查询 SOA 记录
+  static Future<String?> _safeLookupSoa(DnsOverHttps dns, String domain) async {
     try {
-      final records = await _dns.lookupDataByRRType(domain, RRType.SOA);
+      final records = await dns.lookupDataByRRType(domain, RRType.SOA);
       return records.isNotEmpty ? records.first : null;
     } catch (e) {
       return null;
@@ -119,23 +137,15 @@ class DnsUtils {
   /// 清理输入域名
   static String _sanitizeDomain(String input) {
     var domain = input.trim();
-    // 移除协议
     if (domain.startsWith('http://')) domain = domain.substring(7);
     if (domain.startsWith('https://')) domain = domain.substring(8);
-    // 移除路径和查询参数
     final slashIndex = domain.indexOf('/');
     if (slashIndex != -1) domain = domain.substring(0, slashIndex);
-    // 移除端口
     final colonIndex = domain.indexOf(':');
     if (colonIndex != -1 && !domain.contains('.')) {
       domain = domain.substring(0, colonIndex);
     }
-    // 移除末尾的点
     if (domain.endsWith('.')) domain = domain.substring(0, domain.length - 1);
     return domain.toLowerCase();
-  }
-
-  static void dispose() {
-    _dns.close();
   }
 }
