@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/mapale-dev/ctf-tools/compare/ctf_tools-v1.1.0...ctf_tools-v1.2.0) (2026-03-07)
+
+
+### Features
+
+* 超级无敌大更新 ([d03211e](https://github.com/mapale-dev/ctf-tools/commit/d03211e7424447d2045cfc0c17d3fb0f9cffa93e))
+
 ## [1.1.0](https://github.com/mapale-dev/ctf-tools/compare/ctf_tools-v1.0.0...ctf_tools-v1.1.0) (2026-03-07)
 
 
