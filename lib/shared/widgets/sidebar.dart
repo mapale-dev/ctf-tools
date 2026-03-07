@@ -203,10 +203,14 @@ class _SidebarState extends State<Sidebar> {
             expandable: item.isContainerOnly,
             onTap: () {
               setState(() {
-                expandedMenu = item.route;
+                expandedMenu = item.isContainerOnly
+                    ? (isExpanded ? null : item.route)
+                    : item.route;
               });
-              context.go(item.route);
-              widget.onNavigate?.call();
+              if (!item.isContainerOnly) {
+                context.go(item.route);
+                widget.onNavigate?.call();
+              }
             },
             onExpandTap: item.isContainerOnly
                 ? () {

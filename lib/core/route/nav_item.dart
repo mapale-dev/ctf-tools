@@ -13,7 +13,10 @@ class NavItem {
   final IconData icon;
 
   /// 路由页面构建函数。
-  final Widget Function(BuildContext, GoRouterState) builder;
+  final Widget Function(BuildContext, GoRouterState)? builder;
+
+  /// 容器路由的默认跳转目标。
+  final String? redirectTo;
 
   /// 是否为带子菜单的分组入口。
   final bool isContainerOnly;
@@ -22,7 +25,8 @@ class NavItem {
     required this.name,
     required this.route,
     required this.icon,
-    required this.builder,
+    this.builder,
+    this.redirectTo,
     this.isContainerOnly = false,
   });
 }

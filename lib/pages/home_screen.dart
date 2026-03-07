@@ -620,11 +620,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<_ModuleShortcut> _moduleShortcuts() {
     return const [
-      _ModuleShortcut('编码解码', '/encoding', Icons.data_array),
-      _ModuleShortcut('密码学', '/crypto', Icons.lock),
-      _ModuleShortcut('网络协议', '/network', Icons.router),
-      _ModuleShortcut('二进制分析', '/binary', Icons.developer_mode),
-      _ModuleShortcut('隐写工具', '/stego', Icons.hide_image),
+      _ModuleShortcut('编码解码', '/encoding/base', Icons.data_array),
+      _ModuleShortcut('密码学', '/crypto/classical', Icons.lock),
+      _ModuleShortcut('网络协议', '/network/interaction', Icons.router),
+      _ModuleShortcut('二进制分析', '/binary/info', Icons.developer_mode),
+      _ModuleShortcut('隐写工具', '/stego/image', Icons.hide_image),
       _ModuleShortcut('下载中心', '/download', Icons.download_for_offline),
     ];
   }

@@ -1,17 +1,14 @@
 import 'package:ctf_tools/core/route/nav_item.dart';
-import 'package:ctf_tools/features/binary/pages/binary_hub.dart';
 import 'package:ctf_tools/features/binary/pages/disasm_helper.dart';
 import 'package:ctf_tools/features/binary/pages/exploit_helper.dart';
 import 'package:ctf_tools/features/binary/pages/file_info.dart';
 import 'package:ctf_tools/features/binary/pages/strings_extractor.dart';
 import 'package:ctf_tools/features/crypto/pages/classical_cipher.dart';
-import 'package:ctf_tools/features/crypto/pages/crypto_hub.dart';
 import 'package:ctf_tools/features/crypto/pages/hash_tool.dart';
 import 'package:ctf_tools/features/crypto/pages/modern_crypto.dart';
 import 'package:ctf_tools/features/crypto/pages/xor_analysis.dart';
 import 'package:ctf_tools/features/encoding/pages/base_codec.dart';
 import 'package:ctf_tools/features/encoding/pages/compress_coder.dart';
-import 'package:ctf_tools/features/encoding/pages/encoding_hub.dart';
 import 'package:ctf_tools/features/encoding/pages/number_coder.dart';
 import 'package:ctf_tools/features/encoding/pages/protobuf_coder.dart';
 import 'package:ctf_tools/features/encoding/pages/replace_cipher.dart';
@@ -19,12 +16,10 @@ import 'package:ctf_tools/features/encoding/pages/text_codec.dart';
 import 'package:ctf_tools/features/misc/pages/download_center.dart';
 import 'package:ctf_tools/features/network/pages/address_tools.dart';
 import 'package:ctf_tools/features/network/pages/http_request_builder.dart';
-import 'package:ctf_tools/features/network/pages/network_hub.dart';
 import 'package:ctf_tools/features/network/pages/recon.dart';
 import 'package:ctf_tools/features/network/pages/traffic_analysis.dart';
 import 'package:ctf_tools/features/stego/pages/audio_video_stego.dart';
 import 'package:ctf_tools/features/stego/pages/image_stego.dart';
-import 'package:ctf_tools/features/stego/pages/stego_hub.dart';
 import 'package:ctf_tools/features/stego/pages/text_stego.dart';
 import 'package:ctf_tools/main_layout.dart';
 import 'package:ctf_tools/pages/home_screen.dart';
@@ -43,7 +38,7 @@ final List<NavItem> navItems = [
     name: '编码解码',
     route: '/encoding',
     icon: Icons.data_array,
-    builder: (context, state) => const EncodingHubScreen(),
+    redirectTo: '/encoding/base',
     isContainerOnly: true,
   ),
   NavItem(
@@ -86,7 +81,7 @@ final List<NavItem> navItems = [
     name: '密码学',
     route: '/crypto',
     icon: Icons.lock,
-    builder: (context, state) => const CryptoHubScreen(),
+    redirectTo: '/crypto/classical',
     isContainerOnly: true,
   ),
   NavItem(
@@ -117,7 +112,7 @@ final List<NavItem> navItems = [
     name: '隐写工具',
     route: '/stego',
     icon: Icons.hide_image,
-    builder: (context, state) => const StegoHubScreen(),
+    redirectTo: '/stego/image',
     isContainerOnly: true,
   ),
   NavItem(
@@ -142,7 +137,7 @@ final List<NavItem> navItems = [
     name: '网络协议',
     route: '/network',
     icon: Icons.router,
-    builder: (context, state) => const NetworkHubScreen(),
+    redirectTo: '/network/interaction',
     isContainerOnly: true,
   ),
   NavItem(
@@ -173,7 +168,7 @@ final List<NavItem> navItems = [
     name: '二进制分析',
     route: '/binary',
     icon: Icons.developer_mode,
-    builder: (context, state) => const BinaryHubScreen(),
+    redirectTo: '/binary/info',
     isContainerOnly: true,
   ),
   NavItem(
@@ -223,34 +218,45 @@ GoRouter get getRoute => GoRouter(
       },
       routes: [
         ...navItems.map(
-          (item) => GoRoute(
-            name: item.name,
-            path: item.route,
-            builder: item.builder,
-            pageBuilder: (context, state) {
-              return CustomTransitionPage<void>(
-                key: state.pageKey,
-                child: item.builder(context, state),
-                transitionDuration: const Duration(milliseconds: 170),
-                reverseTransitionDuration: const Duration(milliseconds: 130),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                      final fade = CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.easeOutCubic,
-                      );
-                      final slide = Tween<Offset>(
-                        begin: const Offset(0, 0.015),
-                        end: Offset.zero,
-                      ).animate(fade);
-                      return FadeTransition(
-                        opacity: fade,
-                        child: SlideTransition(position: slide, child: child),
-                      );
-                    },
-              );
-            },
-          ),
+          (item) => item.builder != null
+              ? GoRoute(
+                  name: item.name,
+                  path: item.route,
+                  builder: item.builder,
+                  pageBuilder: (context, state) {
+                    return CustomTransitionPage<void>(
+                      key: state.pageKey,
+                      child: item.builder!(context, state),
+                      transitionDuration: const Duration(milliseconds: 170),
+                      reverseTransitionDuration: const Duration(
+                        milliseconds: 130,
+                      ),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            final fade = CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeOutCubic,
+                            );
+                            final slide = Tween<Offset>(
+                              begin: const Offset(0, 0.015),
+                              end: Offset.zero,
+                            ).animate(fade);
+                            return FadeTransition(
+                              opacity: fade,
+                              child: SlideTransition(
+                                position: slide,
+                                child: child,
+                              ),
+                            );
+                          },
+                    );
+                  },
+                )
+              : GoRoute(
+                  name: item.name,
+                  path: item.route,
+                  redirect: (context, state) => item.redirectTo ?? '/',
+                ),
         ),
       ],
     ),

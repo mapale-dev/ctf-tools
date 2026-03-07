@@ -1,269 +1,205 @@
-import 'package:ctf_tools/shared/widgets/dropdown_menu.dart';
-import 'package:ctf_tools/shared/widgets/mbutton.dart';
 import 'package:ctf_tools/shared/widgets/tool_page_shell.dart';
-import 'package:ctf_tools/shared/widgets/tool_status_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class DownloadCenterScreen extends StatefulWidget {
+class DownloadCenterScreen extends StatelessWidget {
   const DownloadCenterScreen({super.key});
-
-  @override
-  State<DownloadCenterScreen> createState() => _DownloadCenterScreenState();
-}
-
-class _DownloadCenterScreenState extends State<DownloadCenterScreen> {
-  final toolNameController = TextEditingController(text: 'ghidra');
-  final versionController = TextEditingController();
-  String packageManager = DownloadCommandBuilder.managers.first;
-  String output = '';
-
-  @override
-  void dispose() {
-    toolNameController.dispose();
-    versionController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
     return ToolPageShell(
-      title: '下载与环境准备',
-      description: '离线生成常见包管理器安装命令，并提供 CTF 常用工具建议清单，避免再停留在下载占位页。',
-      badge: 'Setup',
-      child: Column(
-        children: [
-          ToolSectionCard(
-            title: '命令生成',
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text('包管理器', style: TextStyle(color: scheme.onSurfaceVariant)),
-                MDropdownMenu(
-                  initialValue: packageManager,
-                  items: DownloadCommandBuilder.managers,
-                  onChanged: (value) => setState(() {
-                    packageManager = value;
-                  }),
+      title: '下载中心',
+      description: '整理常见 CTF 工具的官方下载入口',
+      badge: 'Links',
+      child: ToolSectionCard(
+        title: '常用工具列表',
+        child: Column(
+          children: downloadEntries
+              .map(
+                (entry) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _DownloadEntryTile(entry: entry, scheme: scheme),
                 ),
-                const ToolStatusChip(
-                  label: 'Offline Recipes',
-                  icon: Icons.download,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: kToolSectionGap),
-          ToolSectionCard(
-            title: '参数',
-            trailing: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                MElevatedButton(
-                  icon: Icons.auto_fix_high,
-                  text: '加载常用项',
-                  onPressed: () {
-                    toolNameController.text = 'wireshark';
-                    versionController.clear();
-                    setState(() {});
-                  },
-                ),
-                MElevatedButton(
-                  icon: Icons.delete,
-                  text: '清空',
-                  onPressed: () {
-                    toolNameController.clear();
-                    versionController.clear();
-                    setState(() {
-                      output = '';
-                    });
-                  },
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                TextField(
-                  controller: toolNameController,
-                  decoration: const InputDecoration(
-                    labelText: '工具名 / 包名',
-                    prefixIcon: Icon(Icons.build_circle_outlined),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: versionController,
-                  decoration: const InputDecoration(
-                    labelText: '版本（可选）',
-                    prefixIcon: Icon(Icons.tag_outlined),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: kToolSectionGap),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _DownloadEntryTile extends StatelessWidget {
+  const _DownloadEntryTile({required this.entry, required this.scheme});
+
+  final DownloadEntry entry;
+  final ColorScheme scheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: scheme.surfaceContainerHigh.withValues(alpha: 0.45),
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => _openLink(context, entry.url),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MElevatedButton(
-                icon: Icons.terminal,
-                text: '生成命令',
-                onPressed: _buildCommand,
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: scheme.primaryContainer,
+                child: Icon(entry.icon, color: scheme.primary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            entry.name,
+                            style: TextStyle(
+                              color: scheme.onSurface,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        FilledButton.tonalIcon(
+                          onPressed: () => _openLink(context, entry.url),
+                          icon: const Icon(Icons.open_in_new, size: 18),
+                          label: const Text('打开'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      entry.description,
+                      style: TextStyle(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        Chip(label: Text(entry.category)),
+                        Chip(label: Text(entry.url)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: kToolSectionGap),
-          ToolSectionCard(
-            title: '常用工具建议',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: DownloadCommandBuilder.presets
-                  .map(
-                    (preset) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        '${preset.name}: ${preset.description}',
-                        style: TextStyle(color: scheme.onSurface, height: 1.55),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-          const SizedBox(height: kToolSectionGap),
-          ToolSectionCard(
-            title: '输出',
-            child: SelectableText(
-              output.isEmpty ? '暂无结果' : output,
-              style: TextStyle(color: scheme.onSurface, height: 1.6),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  void _buildCommand() {
-    try {
-      final command = DownloadCommandBuilder.build(
-        manager: packageManager,
-        packageName: toolNameController.text,
-        version: versionController.text,
-      );
-      setState(() {
-        output = [
-          'Command:',
-          command,
-          '',
-          'Notes:',
-          ...DownloadCommandBuilder.notesFor(packageManager),
-        ].join('\n');
-      });
-    } catch (e) {
-      setState(() {
-        output = '生成失败: $e';
-      });
+  Future<void> _openLink(BuildContext context, String url) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final uri = Uri.parse(url);
+    final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!success && context.mounted) {
+      messenger.showSnackBar(SnackBar(content: Text('无法打开链接: $url')));
     }
   }
 }
 
-class DownloadCommandBuilder {
-  static const List<String> managers = [
-    'winget',
-    'scoop',
-    'choco',
-    'apt',
-    'brew',
-    'pip',
-    'cargo',
-    'go',
-    'docker',
-  ];
-
-  static const List<ToolPreset> presets = [
-    ToolPreset(name: 'wireshark', description: '抓包和协议分析'),
-    ToolPreset(name: 'ghidra', description: '逆向工程与静态分析'),
-    ToolPreset(name: 'jadx', description: 'Android 反编译'),
-    ToolPreset(name: 'nmap', description: '端口与服务探测'),
-    ToolPreset(name: 'ffuf', description: '目录与参数模糊测试'),
-    ToolPreset(name: 'gobuster', description: '字典爆破与枚举'),
-    ToolPreset(name: 'hashcat', description: '哈希破解'),
-    ToolPreset(name: 'binwalk', description: '固件与嵌入数据提取'),
-    ToolPreset(name: 'stegseek', description: '隐写密码快速爆破'),
-  ];
-
-  static String build({
-    required String manager,
-    required String packageName,
-    required String version,
-  }) {
-    final normalized = packageName.trim();
-    if (normalized.isEmpty) {
-      throw const FormatException('请输入工具名或包名');
-    }
-    final versionText = version.trim();
-    return switch (manager) {
-      'winget' =>
-        versionText.isEmpty
-            ? 'winget install $normalized'
-            : 'winget install $normalized --version $versionText',
-      'scoop' => 'scoop install $normalized',
-      'choco' =>
-        versionText.isEmpty
-            ? 'choco install $normalized -y'
-            : 'choco install $normalized --version $versionText -y',
-      'apt' => 'sudo apt install $normalized',
-      'brew' => 'brew install $normalized',
-      'pip' =>
-        versionText.isEmpty
-            ? 'python -m pip install $normalized'
-            : 'python -m pip install $normalized==$versionText',
-      'cargo' =>
-        versionText.isEmpty
-            ? 'cargo install $normalized'
-            : 'cargo install $normalized --version $versionText',
-      'go' => 'go install ${_goPackage(normalized, versionText)}',
-      'docker' => 'docker pull ${_dockerImage(normalized, versionText)}',
-      _ => throw const FormatException('不支持的包管理器'),
-    };
-  }
-
-  static List<String> notesFor(String manager) {
-    return switch (manager) {
-      'winget' => const [
-        '适合 Windows 环境快速安装 GUI / CLI 工具',
-        '实际包 ID 可能和工具名不同，必要时先用 winget search 查询',
-      ],
-      'scoop' => const ['适合 Windows 下的便携 CLI 工具', '部分工具需要先添加 bucket'],
-      'choco' => const ['适合 Windows 环境脚本化部署', '部分包需要管理员权限'],
-      'apt' => const ['适合 Debian / Ubuntu 系', '仓库版本可能偏旧'],
-      'brew' => const ['适合 macOS / Linux 的统一安装体验', 'GUI 工具可能需要 cask 形式单独处理'],
-      'pip' => const ['适合 Python 类工具', '推荐放进虚拟环境或用 pipx 管理'],
-      'cargo' => const ['适合 Rust 生态工具', '首次安装前需要 Rust toolchain'],
-      'go' => const ['适合 Go 生态工具', '通常需要完整模块路径而不是裸工具名'],
-      'docker' => const ['适合快速拿到隔离运行环境', '拉取镜像后仍需自行补 docker run 参数'],
-      _ => const [],
-    };
-  }
-
-  static String _goPackage(String packageName, String version) {
-    final suffix = version.isEmpty ? 'latest' : version;
-    return '$packageName@$suffix';
-  }
-
-  static String _dockerImage(String packageName, String version) {
-    return version.isEmpty ? packageName : '$packageName:$version';
-  }
-}
-
-class ToolPreset {
-  const ToolPreset({required this.name, required this.description});
+class DownloadEntry {
+  const DownloadEntry({
+    required this.name,
+    required this.description,
+    required this.category,
+    required this.url,
+    required this.icon,
+  });
 
   final String name;
   final String description;
+  final String category;
+  final String url;
+  final IconData icon;
 }
+
+const List<DownloadEntry> downloadEntries = [
+  DownloadEntry(
+    name: 'Burp Suite Community Edition',
+    description: 'Web 安全测试代理，适合抓包、改包和基础漏洞验证。',
+    category: 'Web Security',
+    url: 'https://portswigger.net/burp/communitydownload',
+    icon: Icons.bug_report_outlined,
+  ),
+  DownloadEntry(
+    name: 'Wireshark',
+    description: '经典抓包分析工具，用于协议解析和流量排查。',
+    category: 'Network',
+    url: 'https://www.wireshark.org/download.html',
+    icon: Icons.wifi_tethering,
+  ),
+  DownloadEntry(
+    name: 'Ghidra',
+    description: 'NSA 开源逆向工具，适合静态分析与反编译。',
+    category: 'Reverse Engineering',
+    url: 'https://ghidra-sre.org/',
+    icon: Icons.memory,
+  ),
+  DownloadEntry(
+    name: 'IDA Free',
+    description: 'Hex-Rays 提供的免费版 IDA，适合二进制浏览与分析。',
+    category: 'Reverse Engineering',
+    url: 'https://hex-rays.com/ida-free/',
+    icon: Icons.developer_mode,
+  ),
+  DownloadEntry(
+    name: 'ImHex',
+    description: '现代十六进制编辑器，适合文件结构分析与模板解析。',
+    category: 'Binary',
+    url: 'https://imhex.werwolv.net/',
+    icon: Icons.hexagon_outlined,
+  ),
+  DownloadEntry(
+    name: 'CyberChef',
+    description: '浏览器里的编码解码与数据处理工作台。',
+    category: 'Encoding',
+    url: 'https://gchq.github.io/CyberChef/',
+    icon: Icons.restaurant_menu,
+  ),
+  DownloadEntry(
+    name: 'Hashcat',
+    description: '常用密码哈希破解工具，支持 GPU 加速。',
+    category: 'Crypto',
+    url: 'https://hashcat.net/hashcat/',
+    icon: Icons.password,
+  ),
+  DownloadEntry(
+    name: 'John the Ripper',
+    description: '老牌密码审计工具，适合多类哈希测试。',
+    category: 'Crypto',
+    url: 'https://www.openwall.com/john/',
+    icon: Icons.key,
+  ),
+  DownloadEntry(
+    name: 'Stegsolve',
+    description: '常见图像隐写辅助工具，适合图层与通道检查。',
+    category: 'Stego',
+    url: 'https://github.com/zardus/ctf-tools/blob/master/stegsolve/install',
+    icon: Icons.image_search,
+  ),
+  DownloadEntry(
+    name: 'binwalk',
+    description: '固件分析和嵌入文件提取工具，常用于隐写与二进制题。',
+    category: 'Forensics',
+    url: 'https://github.com/ReFirmLabs/binwalk',
+    icon: Icons.travel_explore,
+  ),
+];
