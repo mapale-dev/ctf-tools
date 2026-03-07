@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/mapale-dev/ctf-tools/compare/ctf_tools-v1.3.0...ctf_tools-v1.4.0) (2026-03-07)
+
+
+### Features
+
+* 增强 PNG 隐写解析能力 ([1d22c32](https://github.com/mapale-dev/ctf-tools/commit/1d22c3257ed4f285da42a06f95f0c4423ba9d0ad))
+
+
+### Bug Fixes
+
+* 修复侧边栏无法折叠 ([f58cd1d](https://github.com/mapale-dev/ctf-tools/commit/f58cd1d35d939ae483651173ba2a89fe576de84f))
+
 ## [1.3.0](https://github.com/mapale-dev/ctf-tools/compare/ctf_tools-v1.2.0...ctf_tools-v1.3.0) (2026-03-07)
 
 
