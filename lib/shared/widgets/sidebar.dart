@@ -17,6 +17,8 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
+  static const String _collapsedMarker = '__collapsed__';
+
   String? expandedMenu;
   String? _version;
 
@@ -46,7 +48,9 @@ class _SidebarState extends State<Sidebar> {
     final location = GoRouterState.of(context).uri.path;
     final scheme = Theme.of(context).colorScheme;
     final computedExpanded = _inferExpandedMenu(location);
-    final currentExpanded = expandedMenu ?? computedExpanded;
+    final currentExpanded = expandedMenu == _collapsedMarker
+        ? null
+        : expandedMenu ?? computedExpanded;
 
     return Material(
       color: Colors.transparent,
@@ -204,7 +208,7 @@ class _SidebarState extends State<Sidebar> {
             onTap: () {
               setState(() {
                 expandedMenu = item.isContainerOnly
-                    ? (isExpanded ? null : item.route)
+                    ? (isExpanded ? _collapsedMarker : item.route)
                     : item.route;
               });
               if (!item.isContainerOnly) {
@@ -215,7 +219,7 @@ class _SidebarState extends State<Sidebar> {
             onExpandTap: item.isContainerOnly
                 ? () {
                     setState(() {
-                      expandedMenu = isExpanded ? null : item.route;
+                      expandedMenu = isExpanded ? _collapsedMarker : item.route;
                     });
                   }
                 : null,
