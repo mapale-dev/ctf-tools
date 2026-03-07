@@ -62,10 +62,18 @@ class _ImageStegoScreenState extends State<ImageStegoScreen> {
               child: TabBarView(
                 children: [
                   _actionPane([
-                    MElevatedButton(icon: Icons.image_search, text: '检查 PNG', onPressed: _inspectChunks),
+                    MElevatedButton(
+                      icon: Icons.image_search,
+                      text: '检查 PNG',
+                      onPressed: _inspectChunks,
+                    ),
                   ]),
                   _actionPane([
-                    MElevatedButton(icon: Icons.saved_search, text: '扫描签名', onPressed: _scanEmbedded),
+                    MElevatedButton(
+                      icon: Icons.saved_search,
+                      text: '扫描签名',
+                      onPressed: _scanEmbedded,
+                    ),
                   ]),
                   _lsbPane(),
                 ],
@@ -83,7 +91,10 @@ class _ImageStegoScreenState extends State<ImageStegoScreen> {
         children: [
           Wrap(spacing: 10, runSpacing: 10, children: actions),
           const SizedBox(height: kToolSectionGap),
-          ToolSectionCard(title: '输出', child: SelectableText(output.isEmpty ? '暂无结果' : output)),
+          ToolSectionCard(
+            title: '输出',
+            child: SelectableText(output.isEmpty ? '暂无结果' : output),
+          ),
         ],
       ),
     );
@@ -102,17 +113,24 @@ class _ImageStegoScreenState extends State<ImageStegoScreen> {
                 const Text('Bit Plane'),
                 MDropdownMenu(
                   initialValue: bitPlane,
-                  items: const ['0', '1'],
+                  items: const ['0', '1', '2', '3', '4', '5', '6', '7'],
                   onChanged: (value) => setState(() {
                     bitPlane = value;
                   }),
                 ),
-                MElevatedButton(icon: Icons.grid_3x3, text: '提取 LSB', onPressed: _extractLsb),
+                MElevatedButton(
+                  icon: Icons.grid_3x3,
+                  text: '提取 LSB',
+                  onPressed: _extractLsb,
+                ),
               ],
             ),
           ),
           const SizedBox(height: kToolSectionGap),
-          ToolSectionCard(title: '输出', child: SelectableText(output.isEmpty ? '暂无结果' : output)),
+          ToolSectionCard(
+            title: '输出',
+            child: SelectableText(output.isEmpty ? '暂无结果' : output),
+          ),
         ],
       ),
     );
@@ -141,7 +159,12 @@ class _ImageStegoScreenState extends State<ImageStegoScreen> {
       setState(() {
         output = hits.isEmpty
             ? '未发现明显嵌入文件签名'
-            : hits.map((hit) => '${hit.type} @ 0x${hit.offset.toRadixString(16).toUpperCase()}\n${hit.preview}').join('\n\n');
+            : hits
+                  .map(
+                    (hit) =>
+                        '${hit.type} @ 0x${hit.offset.toRadixString(16).toUpperCase()}\n${hit.preview}',
+                  )
+                  .join('\n\n');
       });
     } catch (error) {
       showToast('扫描失败: $error', context);
@@ -150,7 +173,10 @@ class _ImageStegoScreenState extends State<ImageStegoScreen> {
 
   void _extractLsb() {
     try {
-      final result = PngLsbExtractor.extract(inputController.text, bitPlane: int.parse(bitPlane));
+      final result = PngLsbExtractor.extract(
+        inputController.text,
+        bitPlane: int.parse(bitPlane),
+      );
       setState(() {
         output = [
           ...result.notes,

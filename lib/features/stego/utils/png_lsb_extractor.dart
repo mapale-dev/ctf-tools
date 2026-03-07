@@ -16,7 +16,14 @@ class PngLsbExtractResult {
 
 class PngLsbExtractor {
   static PngLsbExtractResult extract(String input, {int bitPlane = 0}) {
-    final bytes = HexInput.parseBytes(input, minBytes: 32, errorMessage: '请输入 PNG 十六进制数据');
+    if (bitPlane < 0 || bitPlane > 7) {
+      throw const FormatException('Bit Plane 必须在 0~7 之间');
+    }
+    final bytes = HexInput.parseBytes(
+      input,
+      minBytes: 32,
+      errorMessage: '请输入 PNG 十六进制数据',
+    );
     if (!HexInput.normalize(input).startsWith('89504E470D0A1A0A')) {
       throw const FormatException('不是有效的 PNG 数据');
     }
@@ -42,12 +49,20 @@ class PngLsbExtractor {
     if (idatBytes.isEmpty) {
       throw const FormatException('未找到 IDAT chunk，无法提取 LSB');
     }
-    final bits = idatBytes.map((byte) => ((byte >> bitPlane) & 0x01).toString()).join();
+    final bits = idatBytes
+        .map((byte) => ((byte >> bitPlane) & 0x01).toString())
+        .join();
     final decoded = <int>[];
-    for (var index = 0; index + 8 <= bits.length && decoded.length < 128; index += 8) {
+    for (
+      var index = 0;
+      index + 8 <= bits.length && decoded.length < 128;
+      index += 8
+    ) {
       decoded.add(int.parse(bits.substring(index, index + 8), radix: 2));
     }
-    final preview = utf8.decode(decoded, allowMalformed: true).replaceAll(RegExp(r'[^\x20-\x7E\n\r\t]'), '.');
+    final preview = utf8
+        .decode(decoded, allowMalformed: true)
+        .replaceAll(RegExp(r'[^\x20-\x7E\n\r\t]'), '.');
     return PngLsbExtractResult(
       bitStream: bits.substring(0, bits.length > 256 ? 256 : bits.length),
       textPreview: preview,
