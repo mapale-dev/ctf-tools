@@ -174,7 +174,6 @@ jobs:
       - release
       - build-android
       - build-linux
-      - build-web
       - build-windows
       - build-apple
     if: ${{ needs.release.outputs.release_created == 'true' }}
