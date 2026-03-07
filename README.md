@@ -1,140 +1,133 @@
 # ctf_tools
 
+🎯 ![ctf_tools](https://img.shields.io/badge/CTF--Tools-MapleLeaf-orange?style=for-the-badge&logo=github)
+📜 ![License](https://img.shields.io/github/license/mapale-dev/ctf-tools?style=for-the-badge) ![Stars](https://img.shields.io/github/stars/mapale-dev/ctf-tools?style=social) ![Forks](https://img.shields.io/github/forks/mapale-dev/ctf-tools?style=social)
 
-🎯 ![ctf_tools](https://img.shields.io/badge/CTF--Tools-MapleLeaf-orange?style=for-the-badge&logo=github)  
-📜 ![License](https://img.shields.io/github/license/mapale-dev/ctf-tools?style=for-the-badge)  ![Stars](https://img.shields.io/github/stars/mapale-dev/ctf-tools?style=social)  ![Forks](https://img.shields.io/github/forks/mapale-dev/ctf-tools?style=social)
+MapleLeaf 的跨平台 CTF 工具箱。项目基于 Flutter 构建，提供统一的 Material 3 工作台，用来快速处理编码解码、密码分析、流量排查、二进制辅助和隐写提取等常见 CTF 场景。
 
-✨ MapleLeaf 蜜汁 CTF 工具箱
+## 亮点
 
-一个用 Flutter 构建的跨平台 CTF 助手，集成常用编码/解码、二进制处理、密码学、网络查询与隐写工具，旨在帮助 Pwner/CTF 玩家快速验证样例与调试题目。🚀
+- 多模块工作台：`encoding`、`crypto`、`stego`、`network`、`binary`、`misc`
+- 跨平台运行：支持 Android、Windows、Linux、macOS、iOS
+- 统一交互：侧边栏导航、首页搜索、模块化页面结构
+- 易于扩展：每类工具按 `features/*` 分目录维护，便于继续加页和复用组件
 
----
+## 快速导航
 
-## 亮点 ✨
+- 入口：[`lib/main.dart`](lib/main.dart)
+- 主布局：[`lib/main_layout.dart`](lib/main_layout.dart)
+- 路由定义：[`lib/core/route/app_routes.dart`](lib/core/route/app_routes.dart)
+- 功能模块：[`lib/features`](lib/features)
+- 配置：[`pubspec.yaml`](pubspec.yaml)
 
-- 🧩 多模块工具集合：`binary`、`crypto`、`encoding`、`network`、`stego`、`misc`
-- 🚀 跨平台支持：通过 Flutter 一键运行到 Windows / Linux / macOS
-- 🛠️ 模块化设计：易于扩展与集成新工具页面
-- 🎨 可定制 UI：主题、图标与字体支持
-- 📦 模块化结构：模块化设计，可扩展与集成新工具
----
+## 工具箱内容
 
-## 快速导航 🔗
+基于当前路由和页面实现，工具箱已包含这些模块与功能：
 
-- 仓库根配置： [pubspec.yaml](pubspec.yaml)
-- 源码入口与 UI： [lib](lib)
-- 主要页面： [lib/main.dart](lib/main.dart)、[lib/main_layout.dart](lib/main_layout.dart)
-- 网络工具页： [lib/features/network](lib/features/network)
-- 许可文件： [LICENSE](LICENSE)
+### 编码解码 `encoding`
 
----
+- `Base` 系列编码解码
+- 文本编码转换
+- ProtoBuf 编解码
+- 压缩与解压
+- 数值/进制转换
+- 替换密码工具
 
-## 模块概览 📚
+### 密码学 `crypto`
 
-（基于 `lib` 目录整理）
+- 经典密码分析
+- 现代密码工具
+- 哈希计算
+- XOR/密码分析辅助
 
-- `features/encoding` — 文本与二进制编码/解码（BaseX / Text / Protobuf）🔤
-- `features/crypto` — 密码学助手（哈希 / 常见加密算法工具）🔐
-- `features/binary` — 二进制数据处理与分析工具（字节视图、转储）🔎
-- `features/network` — 网络查询（DNS、WHOIS、Recon 页面）🌐
-- `features/stego` — 隐写检测与提取（图片/声音占位扩展）🕵️‍♂️
-- `features/misc` — 其它小工具与便捷脚本🧰
+### 隐写 `stego`
 
-更多实现细节请查看 [lib](lib) 目录。
+- 图像隐写检测与提取
+- 音视频隐写辅助分析
+- 文本隐写编码与检测
 
----
+### 网络 `network`
 
-## 环境需求 🧭
+- HTTP/协议交互构造
+- 信息收集
+- 流量分析
+- 地址扫描与地址工具
+- DNS / WHOIS 等网络查询能力
 
-- Flutter SDK（与 `pubspec.yaml` 中 `environment` 保持一致）
+### 二进制 `binary`
+
+- 文件解析
+- 字符串提取
+- 反汇编辅助
+- 漏洞利用辅助
+
+### 其它 `misc`
+
+- 下载中心
+- 设置页与主题配置
+
+## 环境需求
+
+- Flutter SDK（以 [`pubspec.yaml`](pubspec.yaml) 为准）
+- 推荐 Dart SDK：`^3.10.8`
 - 桌面构建依赖：
-	- Windows: Visual Studio（含 Desktop development）
-	- macOS: Xcode
-	- Linux: clang / cmake / make
+  - Windows: Visual Studio（Desktop development with C++）
+  - macOS: Xcode
+  - Linux: clang、cmake、ninja-build、pkg-config、GTK 3 开发库
 
-推荐 Dart SDK：`^3.10.8`（详见 `pubspec.yaml`）
+## 本地运行
 
----
-
-
-## 本地运行（示例） ▶️
-
-1) 安装依赖：
+安装依赖：
 
 ```bash
 flutter pub get
 ```
 
-1) 运行：
+启动应用：
 
 ```bash
-# 默认设备/模拟器
 flutter run
+```
 
-# 指定平台（示例：Windows）
+指定平台运行（示例为 Windows）：
+
+```bash
 flutter run -d windows
 ```
 
-1) 打包发布：
+构建发布包（示例为 Windows）：
 
 ```bash
 flutter build windows --release
 ```
 
----
+## 项目结构
 
-## 贡献指南 🤝
-
-欢迎贡献！建议流程：
-
-1. Fork → 新分支（`feature/...` / `fix/...`）
-2. 本地运行并添加测试（如适用）
-3. 提交 PR：描述变更、截图与复现步骤
-
-请遵守：`flutter_lints` 风格与清晰的提交信息。
-
----
-
-## 资源 & 链接 🔗
-
-- Flutter： https://flutter.dev
-- Dart： https://dart.dev
-- 依赖（示例）： `whois`、`dns_client`、`base_x`（详见 [pubspec.yaml](pubspec.yaml)）
-
----
-
-## 架构概览 📐
-
-```mermaid
-flowchart LR
-	A[UI 层] --> B(Main Layout)
-	B --> C{Features}
-	C --> D[encoding]
-	C --> E[crypto]
-	C --> F[binary]
-	C --> G[network]
-	C --> H[stego]
-	B --> I[shared/providers]
+```text
+lib/
+  core/route/        路由与导航定义
+  pages/             首页与设置页
+  features/          各功能模块
+  shared/            通用布局、组件、主题与工具函数
 ```
 
----
+## 贡献指南
 
+1. Fork 仓库并创建新分支，如 `feature/...` 或 `fix/...`
+2. 完成修改后本地运行并补充测试（如适用）
+3. 提交 PR，说明变更内容、使用场景和必要截图
 
-## 许可证 ⚖️
+代码风格默认遵循 `flutter_lints`。
 
-本项目遵循 [LICENSE](LICENSE)。如需商业使用请在 Issues 中联系作者讨论。📬
+## 资源
 
----
+- Flutter: https://flutter.dev
+- Dart: https://dart.dev
 
-## 联系与鸣谢 💬
+## 许可证
 
-如有建议或问题，请在 Issues 中提出。感谢所有开源依赖与贡献者。
+本项目遵循 [LICENSE](LICENSE)。
 
-_制作：MapleLeaf — 祝你打破题目！💥_
+## 联系
 
-
----
-
-## 联系与鸣谢
-
-如有建议或想法，欢迎在 Issues 中提出。感谢所有贡献者与灵感来源的开源库。
+如有建议或问题，欢迎在 Issues 中提出。
