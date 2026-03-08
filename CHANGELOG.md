@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/mapale-dev/ctf-tools/compare/ctf_tools-v1.4.0...ctf_tools-v1.5.0) (2026-03-08)
+
+
+### Features
+
+* 添加 Flatpak 打包支持 ([24ccadb](https://github.com/mapale-dev/ctf-tools/commit/24ccadb9a1883154449a80e8f518e5013b9caa26))
+* 添加 Flatpak 打包支持 ([9e6b35d](https://github.com/mapale-dev/ctf-tools/commit/9e6b35da3c0e43922d69a1285e0893cdc968355f))
+
 ## [1.4.0](https://github.com/mapale-dev/ctf-tools/compare/ctf_tools-v1.3.0...ctf_tools-v1.4.0) (2026-03-07)
 
 
