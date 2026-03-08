@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=CTF Tools
+GenericName=CTF Toolkit
+Comment=MapleLeaf CTF Toolkit - Encoding, Crypto, Network, Binary & Stego tools
+Exec=ctf_tools
+Icon=com.github.memlts.ctf_tools.ctf_tools
+Terminal=false
+Type=Application
+Categories=Development;Security;Utility;
+StartupWMClass=ctf_tools

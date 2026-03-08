@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.github.memlts.ctf_tools.ctf_tools</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>CTF Tools</name>
+  <summary>MapleLeaf CTF Toolkit</summary>
+  <description>
+    <p>A cross-platform CTF (Capture The Flag) toolkit providing a unified Material 3 workbench with tools for:</p>
+    <ul>
+      <li>Encoding and decoding (Base64, Hex, URL, etc.)</li>
+      <li>Cryptanalysis and encryption</li>
+      <li>Network analysis (HTTP, DNS, WHOIS)</li>
+      <li>Binary assistance</li>
+      <li>Steganography extraction</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">com.github.memlts.ctf_tools.ctf_tools.desktop</launchable>
+  <url type="homepage">https://github.com/mapale-dev/ctf-tools</url>
+  <url type="bugtracker">https://github.com/mapale-dev/ctf-tools/issues</url>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>ctf_tools</binary>
+  </provides>
+</component>

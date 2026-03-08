@@ -1,0 +1,26 @@
+app-id: com.github.memlts.ctf_tools.ctf_tools
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: ctf_tools
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+modules:
+  - name: ctf_tools
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/ctf_tools
+      - cp -r bundle/* /app/ctf_tools/
+      - chmod +x /app/ctf_tools/ctf_tools
+      - mkdir -p /app/bin
+      - ln -s /app/ctf_tools/ctf_tools /app/bin/ctf_tools
+      - install -Dm644 com.github.memlts.ctf_tools.ctf_tools.desktop -t /app/share/applications/
+      - install -Dm644 com.github.memlts.ctf_tools.ctf_tools.metainfo.xml -t /app/share/metainfo/
+      - install -Dm644 com.github.memlts.ctf_tools.ctf_tools.png /app/share/icons/hicolor/256x256/apps/com.github.memlts.ctf_tools.ctf_tools.png
+    sources:
+      - type: dir
+        path: .
